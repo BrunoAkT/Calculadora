@@ -2,9 +2,6 @@
 
 Este é um projeto de uma calculadora funcional desenvolvida com React Native e Expo, utilizando TypeScript. O objetivo foi criar uma interface de calculadora moderna e responsiva, implementando a lógica de cálculo de operações matemáticas básicas.
 
-![Screenshot da Calculadora](placeholder.png)
-*(Substitua `placeholder.png` pelo caminho de uma imagem ou GIF da sua calculadora)*
-
 ---
 
 ## 🚀 Tecnologias Utilizadas
@@ -65,21 +62,4 @@ Para executar este projeto localmente, siga os passos abaixo:
 
 ---
 
-## 💡 Lógica de Cálculo
 
-A função de cálculo foi implementada manualmente em TypeScript, sem o uso de bibliotecas externas como `mathjs` ou a função `eval()`. O algoritmo segue duas etapas principais para respeitar a ordem de precedência das operações:
-
-1.  **Primeira Passagem**: O array da expressão é percorrido para resolver todas as operações de multiplicação (`*`) e divisão (`/`).
-2.  **Segunda Passagem**: O array resultante da primeira etapa é percorrido novamente para resolver as operações de adição (`+`) e subtração (`-`).
-
-Este método garante que o resultado matemático seja preciso e evita os riscos de segurança associados ao uso de `eval()`.
-
----
-
-## 👨‍💻 Autor
-
-- **Bruno** - [Seu-GitHub](https://github.com/seu-github)
-
-*(Sinta-se à vontade para me contatar!)*
-
-#
