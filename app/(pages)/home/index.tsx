@@ -19,7 +19,7 @@ export default function home() {
     const pressedButton = (num: string) => {
         const numero = parseFloat(num);
         if (isNaN(numero)) {
-            console.log('em Operador ' + num);
+            //console.log('em Operador ' + num);
             if (num === '.') {
                 setValue(prevValue => {
                     if (prevValue.includes('.')) {
@@ -65,20 +65,25 @@ export default function home() {
     }
 
     const nextLayer = (op: string) => {
-        if (op === '=') {
+        if (op === '=' && mark === '-' ) {
+            calculateResult([...query, value.slice(1)]);
+            return;
+        } else if (op === '=' ) {
             calculateResult([...query, value]);
+            return;
         }
+
         if (mark === '-' && query.at(-1) !== '-') {
             setQuery(prevQuery => [...prevQuery, '(' + value + ')', op]);
         } else if (query.at(-1) === '-' && mark === '-') {
-            setQuery(prevQuery => [...prevQuery.slice(0, -1), value , op]);
+            setQuery(prevQuery => [...prevQuery, value.slice(1), op]);
         } else if (query.at(-1) === '-' && mark === '+') {
-            setQuery(prevQuery => [...prevQuery.slice(0, -1), '+' + value , op]);
+            setQuery(prevQuery => [...prevQuery.slice(0, -1), '+' + value, op]);
         } else {
             setQuery(prevQuery => [...prevQuery, value, op]);
         }
+        
         setValue('0');
-        console.log('query atual: ' + [...query, value, op].join(' '));
         if (op === '-') {
             setMark('-');
             setValue(prevValue => {
@@ -91,17 +96,62 @@ export default function home() {
         } else {
             setMark('+');
         }
-        
+
     }
 
     const calculateResult = (fullQuery: Array[]) => {
-        let expression = fullQuery.join(' ');
-        expression.forEach(value =>{
-            console.log('valor do for each: ' + value);
-        })
-        console.log('Calculating result for expression: ' + expression);
-    }
+        console.log('------------------------------')
+        console.log(fullQuery)
+        const expression = fullQuery
+        let i = 0
+        const product = []
 
+        while (i < expression.length) {
+            const item = expression[i]
+            console.log('Pushing: ', item)
+
+            if (item === '*' || item === '/') {
+                const left = parseFloat(expression[i - 1])
+                console.log('Left: ', left)
+                const right = parseFloat(expression[i + 1])
+                console.log('Right: ', right)
+
+                let tempResult;
+                if (item === '*') {
+                    tempResult = left * right
+                } else {
+                    tempResult = left / right
+                }
+                product.push(tempResult.toString())
+                i += 2
+            } else if (i > 0 && (expression[i + 1] === '*' || expression[i + 1] === '/')) {
+                i++
+            } else {
+                product.push(item)
+                i++
+            }
+        }
+
+        console.log('After * and /: ', product)
+        let result = parseFloat(product[0])
+        i = 1
+        while (i < product.length) {
+            const operator = product[i]
+            const right = parseFloat(product[i + 1])
+
+            if (operator === '+') {
+                result += right
+            } else {
+                result -= right
+            }
+            i += 2
+        }
+        console.log('Final Result: ', result)
+        setValue(result.toString());
+        setQuery([]);
+        setMark('+');
+        return
+    }
     return (
         <View style={styles.MainContainer}>
             <View style={styles.header}>
