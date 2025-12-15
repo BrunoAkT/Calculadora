@@ -12,14 +12,13 @@ export default function home() {
         ['0', '.', 'DEL', '=']
     ];
     const [query, setQuery] = useState<string[]>([]);
-    const [result, setResult] = useState(0);
     const [mark, setMark] = useState("+");
     const [value, setValue] = useState('0');
 
     const pressedButton = (num: string) => {
         const numero = parseFloat(num);
         if (isNaN(numero)) {
-            //console.log('em Operador ' + num);
+
             if (num === '.') {
                 setValue(prevValue => {
                     if (prevValue.includes('.')) {
@@ -65,73 +64,63 @@ export default function home() {
     }
 
     const nextLayer = (op: string) => {
-        if (op === '=' && mark === '-' ) {
-            calculateResult([...query, value.slice(1)]);
+        if (op === '=' && mark === '-') {
+            calculateResult([...query, '(' + value + ')']);
             return;
-        } else if (op === '=' ) {
+        } else if (op === '=') {
             calculateResult([...query, value]);
             return;
         }
 
-        if (mark === '-' && query.at(-1) !== '-') {
+        if (mark === '-') {
             setQuery(prevQuery => [...prevQuery, '(' + value + ')', op]);
-        } else if (query.at(-1) === '-' && mark === '-') {
-            setQuery(prevQuery => [...prevQuery, value.slice(1), op]);
-        } else if (query.at(-1) === '-' && mark === '+') {
-            setQuery(prevQuery => [...prevQuery.slice(0, -1), '+' + value, op]);
         } else {
             setQuery(prevQuery => [...prevQuery, value, op]);
         }
-        
+        setMark('+');
         setValue('0');
-        if (op === '-') {
-            setMark('-');
-            setValue(prevValue => {
-                if (prevValue.startsWith('-')) {
-                    return prevValue.slice(1);
-                } else {
-                    return '-' + prevValue;
-                }
-            });
-        } else {
-            setMark('+');
-        }
-
     }
 
-    const calculateResult = (fullQuery: Array[]) => {
+    const calculateResult = (fullQuery: string[]) => {
         console.log('------------------------------')
         console.log(fullQuery)
         const expression = fullQuery
         let i = 0
+        
         const product = []
-
         while (i < expression.length) {
-            const item = expression[i]
+            let item = expression[i]
+
             console.log('Pushing: ', item)
+            if (item.startsWith('(-')){
+                item = item.slice(1, -1)
+            }
 
             if (item === '*' || item === '/') {
-                const left = parseFloat(expression[i - 1])
+                const left = parseFloat(expression[i - 1].startsWith('(-') ? expression[i - 1].slice(1, -1) : expression[i - 1])
                 console.log('Left: ', left)
-                const right = parseFloat(expression[i + 1])
+                const right = parseFloat(expression[i + 1].startsWith('(-') ? expression[i + 1].slice(1, -1) : expression[i + 1])
                 console.log('Right: ', right)
-
                 let tempResult;
+
                 if (item === '*') {
                     tempResult = left * right
                 } else {
                     tempResult = left / right
                 }
-                product.push(tempResult.toString())
-                i += 2
-            } else if (i > 0 && (expression[i + 1] === '*' || expression[i + 1] === '/')) {
+                console.log('****Temp Result: ', tempResult)
+                expression[i + 1] = tempResult.toString()
+
+                i++
+            } else if (i >= 0 && (expression[i + 1] === '*' || expression[i + 1] === '/')) {
+                console.log('Skipping: ', item)
                 i++
             } else {
                 product.push(item)
                 i++
             }
-        }
 
+        }
         console.log('After * and /: ', product)
         let result = parseFloat(product[0])
         i = 1
@@ -147,6 +136,12 @@ export default function home() {
             i += 2
         }
         console.log('Final Result: ', result)
+        if(isNaN(result)){
+            setValue('0');
+            setQuery([]);
+            setMark('+');
+            return;
+        }
         setValue(result.toString());
         setQuery([]);
         setMark('+');
