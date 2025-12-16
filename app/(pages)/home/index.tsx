@@ -41,7 +41,8 @@ export default function home() {
                         return prevValue.slice(0, -1);
                     }
                 });
-            } else if (num === '+/-') {
+            }
+            else if (num === '+/-') {
                 setMark(prevMark => prevMark === '+' ? '-' : '+');
                 setValue(prevValue => {
                     if (prevValue.startsWith('-')) {
@@ -50,6 +51,23 @@ export default function home() {
                         return '-' + prevValue;
                     }
                 });
+            } else if (num === '%') {
+                let i = query.length - 1;
+                let base = '0'
+                let queryStr = ''
+                while (i >= 0) {
+                    if (query[i] === '+' || query[i] === '-') {
+                        base = query[i-1]
+                        setValue(prevValue => (parseFloat(prevValue) * (parseFloat(base) / 100)).toString());
+                        break;
+                    } else if (query[i] === '*' || query[i] === '/') {
+                        base = query[i-1]
+                        setValue(prevValue => (parseFloat(prevValue)/ 100).toString());
+                        break;
+                    } 
+                }
+                console.log(base)
+
             }
             else {
                 nextLayer(num);
@@ -86,13 +104,13 @@ export default function home() {
         console.log(fullQuery)
         const expression = fullQuery
         let i = 0
-        
+
         const product = []
         while (i < expression.length) {
             let item = expression[i]
 
             console.log('Pushing: ', item)
-            if (item.startsWith('(-')){
+            if (item.startsWith('(-')) {
                 item = item.slice(1, -1)
             }
 
@@ -136,7 +154,7 @@ export default function home() {
             i += 2
         }
         console.log('Final Result: ', result)
-        if(isNaN(result)){
+        if (isNaN(result)) {
             setValue('0');
             setQuery([]);
             setMark('+');
