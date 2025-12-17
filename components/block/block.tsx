@@ -9,8 +9,17 @@ interface BlockProps {
 
 export default function Block({ button, onPress }: BlockProps) {
     return (
-        <TouchableOpacity key={button} style={styles.container} onPress={onPress}>
-            <Text style={styles.text}>{button}</Text>
-        </TouchableOpacity>
+        <View style={styles.container}>
+            {
+                (parseFloat(button)) >= 0 || button === '.' || button === 'DEL' ?
+                    <TouchableOpacity key={button} style={styles.containerNumber} onPress={onPress}>
+                        <Text style={styles.textNumber}>{button}</Text>
+                    </TouchableOpacity> :
+                    <TouchableOpacity key={button}  onPress={onPress}>
+                        <Text style={styles.text}>{button}</Text>
+                    </TouchableOpacity>
+
+            }
+        </View>
     )
 }
